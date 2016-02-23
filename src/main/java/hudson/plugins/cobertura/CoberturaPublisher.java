@@ -7,6 +7,8 @@ import hudson.Util;
 import hudson.model.Action;
 import hudson.model.BuildListener;
 import hudson.model.Result;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractItem;
 import hudson.model.AbstractProject;
@@ -20,6 +22,7 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
+import jenkins.tasks.SimpleBuildStep;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -50,7 +53,7 @@ import org.kohsuke.stapler.StaplerRequest;
  *
  * @author Stephen Connolly
  */
-public class CoberturaPublisher extends Recorder {
+public class CoberturaPublisher extends Recorder implements SimpleBuildStep {
 
     private final String coberturaReportFile;
 
@@ -314,8 +317,8 @@ public class CoberturaPublisher extends Recorder {
      * Gets the directory where the Cobertura Report is stored for the given project.
      */
     /*package*/
-    static File[] getCoberturaReports(AbstractBuild<?, ?> build) {
-        return build.getRootDir().listFiles(COBERTURA_FILENAME_FILTER);
+    static File[] getCoberturaReports(Run<?, ?> run) {
+        return run.getRootDir().listFiles(COBERTURA_FILENAME_FILTER);
     }
 
     /**
@@ -335,6 +338,17 @@ public class CoberturaPublisher extends Recorder {
         final boolean multipleModuleRoots =
                 moduleRoots != null && moduleRoots.length > 1;
         final FilePath moduleRoot = multipleModuleRoots ? build.getWorkspace() : build.getModuleRoot();
+        this.perform(build, moduleRoot, launcher, listener);
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	public void perform(Run<?, ?> build, FilePath moduleRoot, Launcher launcher, TaskListener listener)
+			throws InterruptedException, IOException {
         final File buildCoberturaDir = build.getRootDir();
         FilePath buildTarget = new FilePath(buildCoberturaDir);
 
@@ -345,7 +359,7 @@ public class CoberturaPublisher extends Recorder {
             // if the build has failed, then there's not
             // much point in reporting an error
             if (build.getResult().isWorseOrEqualTo(Result.FAILURE) && reports.length == 0) {
-                return true;
+                return;
             }
 
         } catch (IOException e) {
@@ -366,7 +380,7 @@ public class CoberturaPublisher extends Recorder {
             } else {
                 listener.getLogger().println("[Cobertura] Skipped cobertura reports.");
             }
-            return true;
+            return;
         }
 
         for (int i = 0; i < reports.length; i++) {
@@ -464,14 +478,12 @@ public class CoberturaPublisher extends Recorder {
                     + "the XML report(s) for Cobertura?");
             build.setResult(Result.FAILURE);
         }
-
-        return true;
-    }
+	}
 
     /**
      * Changes unhealthy or unstable percentage fields for ratcheting.
      */
-    private void setNewPercentages(CoverageResult result, boolean select, BuildListener listener) {
+    private void setNewPercentages(CoverageResult result, boolean select, TaskListener listener) {
         Set<CoverageMetric> healthyMetrics = healthyTarget.getAllMetrics(result);
         float newPercent;
         float oldPercent;

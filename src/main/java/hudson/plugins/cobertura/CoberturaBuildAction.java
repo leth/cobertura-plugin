@@ -3,7 +3,7 @@ package hudson.plugins.cobertura;
 import hudson.model.HealthReport;
 import hudson.model.HealthReportingAction;
 import hudson.model.Result;
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.plugins.cobertura.targets.CoverageMetric;
 import hudson.plugins.cobertura.targets.CoverageTarget;
 import hudson.plugins.cobertura.targets.CoverageResult;
@@ -33,7 +33,7 @@ import org.kohsuke.stapler.StaplerResponse;
  */
 public class CoberturaBuildAction implements HealthReportingAction, StaplerProxy, Chartable {
 
-    private final AbstractBuild<?, ?> owner;
+    private final Run<?, ?> owner;
     private CoverageTarget healthyTarget;
     private CoverageTarget unhealthyTarget;
     private boolean failUnhealthy;
@@ -135,7 +135,7 @@ public class CoberturaBuildAction implements HealthReportingAction, StaplerProxy
         return getResult();  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public AbstractBuild<?, ?> getOwner() {
+    public Run<?, ?> getOwner() {
         return owner;
     }
 
@@ -156,8 +156,8 @@ public class CoberturaBuildAction implements HealthReportingAction, StaplerProxy
      * Gets the previous {@link CoberturaBuildAction} of the given build.
      */
     /*package*/
-    static CoberturaBuildAction getPreviousResult(AbstractBuild<?, ?> start) {
-        AbstractBuild<?, ?> b = start;
+    static CoberturaBuildAction getPreviousResult(Run<?, ?> start) {
+        Run<?, ?> b = start;
         while (true) {
             b = b.getPreviousNotFailedBuild();
             if (b == null) {
@@ -178,7 +178,7 @@ public class CoberturaBuildAction implements HealthReportingAction, StaplerProxy
         return onlyStable;
     }
 
-    CoberturaBuildAction(AbstractBuild<?, ?> owner, CoverageResult r, CoverageTarget healthyTarget,
+    CoberturaBuildAction(Run<?, ?> owner, CoverageResult r, CoverageTarget healthyTarget,
             CoverageTarget unhealthyTarget, boolean onlyStable, boolean failUnhealthy, boolean failUnstable, boolean autoUpdateHealth, boolean autoUpdateStability) {
         this.owner = owner;
         this.report = new WeakReference<CoverageResult>(r);
@@ -227,9 +227,9 @@ public class CoberturaBuildAction implements HealthReportingAction, StaplerProxy
     }
     private static final Logger logger = Logger.getLogger(CoberturaBuildAction.class.getName());
 
-    public static CoberturaBuildAction load(AbstractBuild<?, ?> build, CoverageResult result, CoverageTarget healthyTarget,
+    public static CoberturaBuildAction load(Run<?, ?> run, CoverageResult result, CoverageTarget healthyTarget,
             CoverageTarget unhealthyTarget, boolean onlyStable, boolean failUnhealthy, boolean failUnstable, boolean autoUpdateHealth, boolean autoUpdateStability) {
-        return new CoberturaBuildAction(build, result, healthyTarget, unhealthyTarget, onlyStable, failUnhealthy, failUnstable, autoUpdateHealth, autoUpdateStability);
+        return new CoberturaBuildAction(run, result, healthyTarget, unhealthyTarget, onlyStable, failUnhealthy, failUnstable, autoUpdateHealth, autoUpdateStability);
     }
 
     /**

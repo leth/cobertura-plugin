@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.480.3</version>
+    <version>1.596.1</version>
   </parent>
 
   <artifactId>cobertura</artifactId>
@@ -54,6 +54,7 @@
           <artifactId>cglib</artifactId>
         </exclusion>
       </exclusions>
+      <version>2.9</version>
     </dependency>
     <dependency>
       <groupId>org.easymock</groupId>
