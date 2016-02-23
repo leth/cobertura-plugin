@@ -6,6 +6,8 @@ import hudson.FilePath;
 import hudson.model.TaskListener;
 import hudson.plugins.cobertura.targets.CoveragePaint;
 import hudson.remoting.VirtualChannel;
+import jenkins.security.Roles;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,6 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.jenkinsci.remoting.RoleChecker;
 
 /**
  * TODO javadoc.
@@ -152,5 +156,10 @@ public class SourceCodePainter implements FilePath.FileCallable<Boolean>, Serial
             return SourceEncoding.UTF_8;
         }
         return sourceEncoding;
+    }
+
+    @Override
+    public void checkRoles(RoleChecker checker) throws SecurityException {
+        checker.check(this, Roles.SLAVE);
     }
 }

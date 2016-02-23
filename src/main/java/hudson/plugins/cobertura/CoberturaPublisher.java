@@ -22,6 +22,7 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
+import jenkins.security.Roles;
 import jenkins.tasks.SimpleBuildStep;
 
 import java.io.File;
@@ -45,6 +46,7 @@ import javax.xml.stream.events.XMLEvent;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.beanutils.ConvertUtils;
+import org.jenkinsci.remoting.RoleChecker;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -597,6 +599,11 @@ public class CoberturaPublisher extends Recorder implements SimpleBuildStep {
 
             }
             return r;
+        }
+
+        @Override
+        public void checkRoles(RoleChecker checker) throws SecurityException {
+            checker.check(this, Roles.SLAVE);
         }
     }
 
