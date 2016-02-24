@@ -78,6 +78,7 @@ public class CoverageChart
 	protected static boolean isZoomCoverageChart( Chartable chartable )
 	{
 		if( chartable == null ) return false;
+		// FIXME: What to use insetead of getProject and getPublishersList?
 		CoberturaPublisher cp = (CoberturaPublisher) chartable.getOwner().getProject().getPublishersList().get( CoberturaPublisher.DESCRIPTOR );
 		boolean zoomCoverageChart = false;
 		if( cp != null )
@@ -94,6 +95,7 @@ public class CoverageChart
 	protected static int getMaximumBuilds( Chartable chartable )
 	{
 		if( chartable == null ) return 0;
+		// FIXME: What to use insetead of getProject and getPublishersList?
 		CoberturaPublisher cp = (CoberturaPublisher) chartable.getOwner().getProject().getPublishersList().get( CoberturaPublisher.DESCRIPTOR );
 		int maximumBuilds = 0;
 		if( cp != null )

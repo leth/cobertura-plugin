@@ -411,6 +411,7 @@ public class CoberturaPublisher extends Recorder implements SimpleBuildStep {
         if (result != null) {
             listener.getLogger().println("Cobertura coverage report found.");
             result.setOwner(build);
+            // FIXME: What to use instead of getProject?
             final FilePath paintedSourcesPath = new FilePath(new File(build.getProject().getRootDir(), "cobertura"));
             paintedSourcesPath.mkdirs();
 

@@ -57,6 +57,7 @@ public class CoberturaBuildAction implements HealthReportingAction, StaplerProxy
             return health;
         }
         //try to get targets from root project (for maven modules targets are null)
+        // FIXME: What to use instead of getProject?
         DescribableList rootpublishers = owner.getProject().getRootProject().getPublishersList();
 
         if (rootpublishers != null) {
